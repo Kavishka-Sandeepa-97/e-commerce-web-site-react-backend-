@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function ProductById() {
 

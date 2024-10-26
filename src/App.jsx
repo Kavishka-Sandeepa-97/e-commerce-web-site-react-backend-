@@ -5,6 +5,9 @@ import Product from "./pages/Product";
 import Category from "./pages/Category";
 import Layout from "./pages/layout";
 import ProductById from "./pages/ProductById";
+import "./App.scss";
+
+
 
 function App() {
   return (

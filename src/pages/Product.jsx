@@ -72,6 +72,10 @@ function Product() {
     }
 
     addProduct(data);
+    productNameRef.current.value = '';
+    priceRef.current.value = '';
+    quantityRef.current.value = '';
+    categoryRef.current.value = '';
 
   }
 
@@ -115,7 +119,7 @@ function Product() {
           
         </div>
 
-        <button type="submit" >add product</button>
+        <button type="submit" className="btn btn-primary">add product</button>
 
         
       </form>
