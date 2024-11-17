@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 
 function Product() {
   const [products, setProduct] = useState([]);
-  const [category,setCategory]=useState([]);
-
-  const productNameRef=useRef(null);
-  const priceRef=useRef(0);
-  const quantityRef=useRef(0);
+  const [category, setCategory] = useState([]);
+  const productNameRef = useRef(null);
+  const priceRef = useRef(0);
+  const quantityRef = useRef(0);
   const categoryRef = useRef(0);
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     fetchProduct();
@@ -17,67 +17,55 @@ function Product() {
 
   const fetchProduct = () => {
     fetch(`http://localhost:8080/getAllProduct`)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setProduct(data);
-        console.log(data);
-      })
-      .catch((e) => {
-        console.log("error > ", e);
-      });
+      .then((response) => response.json())
+      .then((data) => setProduct(data))
+      .catch((e) => console.log("error > ", e));
   };
 
   const fetchCategory = () => {
     fetch(`http://localhost:8080/getAllCategory`)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setCategory(data);
-        console.log(data);
-      })
-      .catch((e) => {
-        console.log("error > ", e);
-      });
+      .then((response) => response.json())
+      .then((data) => setCategory(data))
+      .catch((e) => console.log("error > ", e));
   };
 
-  const addProduct = (data) => {
-    console.log(data);
-    fetch(`http://localhost:8080/addProduct`,{
-      method:'post',
-      headers:{'Content-Type': 'application/json'},
-      body:JSON.stringify(data)
-
+  const addProduct = (formData) => {
+    fetch(`http://localhost:8080/addProduct`, {
+      method: 'POST',
+      body: formData,
     })
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        fetchProduct()
+        fetchProduct();
       })
-      .catch((e) => {
-        console.log("error > ", e);
-      });
+      .catch((e) => console.log("error > ", e));
   };
-  const hadleSubmit=(e)=>{
+
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const data={
-      productName:productNameRef.current.value,
-      price:parseFloat(priceRef.current.value),
-      qty:parseFloat(quantityRef.current.value),
-      categoryId:parseInt(categoryRef.current.value)
+
+    const formData = new FormData();
+    formData.append('productName', productNameRef.current.value);
+    formData.append('price', parseFloat(priceRef.current.value));
+    formData.append('qty', parseFloat(quantityRef.current.value));
+    formData.append('categoryId', parseInt(categoryRef.current.value));
+    if (imageFile) {
+      formData.append('imageFile', imageFile);
     }
 
-    addProduct(data);
+    addProduct(formData);
+
     productNameRef.current.value = '';
     priceRef.current.value = '';
     quantityRef.current.value = '';
     categoryRef.current.value = '';
-
-  }
+    setImageFile(null);
+  };
 
   return (
     <div>
@@ -89,39 +77,38 @@ function Product() {
         ))}
       </ul>
 
-      <form onSubmit={hadleSubmit}>
+      <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="productname">product name :</label>
-          <input id="productname" type="text"  ref={productNameRef}/>
+          <label htmlFor="productname">Product Name:</label>
+          <input id="productname" type="text" ref={productNameRef} />
         </div>
 
         <div>
-          <label htmlFor="">Price :</label>
-          <input type="number" ref={priceRef}/>
+          <label>Price:</label>
+          <input type="number" ref={priceRef} />
         </div>
 
         <div>
-          <label htmlFor="">Quantity :</label>
-          <input type="number" ref={quantityRef}/>
+          <label>Quantity:</label>
+          <input type="number" ref={quantityRef} />
         </div>
-        
+
         <div>
-        <label htmlFor="">select your category :</label>
-          <select name="" id="dropdown" ref={categoryRef}>
-          <option value="">Select</option>
-           {
-              category.map((data)=>(
+          <label>Select Category:</label>
+          <select id="dropdown" ref={categoryRef}>
+            <option value="">Select</option>
+            {category.map((data) => (
               <option key={data.id} value={data.id}>{data.name}</option>
-          ))
-           }
-            
+            ))}
           </select>
-          
         </div>
 
-        <button type="submit" className="btn btn-primary">add product</button>
+        <div>
+          <label>Product Image:</label>
+          <input type="file" onChange={handleImageChange} />
+        </div>
 
-        
+        <button type="submit" className="btn btn-primary">Add Product</button>
       </form>
     </div>
   );
